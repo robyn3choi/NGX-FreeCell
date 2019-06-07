@@ -2,18 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour
+public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    int number;
-    int suit;
+    public static float CARD_OFFSET = -26;
 
-    public void Initialize(int number, int suit, Sprite suitSprite)
+    public GameObject highlight;
+    public Image suitImage;
+    public bool isFrontCard;
+
+    private int number;
+    private int suit;
+    private Transform canvas;
+
+    public void Initialize(int number, int suit, Sprite suitSprite, Transform canvas)
     {
         this.number = number;
         this.suit = suit;
         GetComponentInChildren<Text>().text = GetStringFromNumber(number);
-        GetComponentsInChildren<Image>()[1].sprite = suitSprite;
+        suitImage.sprite = suitSprite;
+        this.canvas = canvas;
     }
 
     private string GetStringFromNumber(int number)
@@ -31,5 +40,51 @@ public class Card : MonoBehaviour
             default:
                 return number.ToString();
         }
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        if (isFrontCard)
+        {
+            transform.SetParent(canvas);
+            CardManager.inst.StartCardDrag(this);
+        }
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        if (isFrontCard)
+        {
+            transform.position = Input.mousePosition;
+            CardManager.inst.CardDrag(this);
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        if (isFrontCard)
+        {
+            CardManager.inst.EndCardDrag(this);
+        }
+    }
+
+    public void Highlight()
+    {
+        highlight.SetActive(true);
+    }
+
+    public void StopHighlight()
+    {
+        highlight.SetActive(false);
+    }
+
+    public bool IsRed()
+    {
+        return suit == 0 || suit == 2;
+    }
+
+    public int GetNumber()
+    {
+        return number;
     }
 }

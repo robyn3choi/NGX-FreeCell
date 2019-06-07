@@ -7,12 +7,27 @@ public class CardManager : MonoBehaviour
     public Transform canvas;
     public GameObject cardPrefab;
     public List<Sprite> suitSprites;
-    public List<Transform> tableauPiles;
+    public List<Cascade> cascades;
     
     private List<Card> cards = new List<Card>();
-    private int currentTableauIndex = 0;
-    private int numCardsInCurrentTableauPile = 0;
-    private const float cardOffset = -26;
+    private int currentCascadeIndex = 0;
+    private List<ICell> cells = new List<ICell>(); // cascades, freecells, foundations 
+    private List<ICell> potentialCellsForCardDrop = new List<ICell>();
+    private ICell cellDraggedFrom;
+    private ICell currentDropCell;
+
+    public static CardManager inst = null;
+    void Awake()
+    {
+        if (inst == null)
+        {
+            inst = this;
+        }
+        else if (inst != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     // Start is called before the first frame update
     private void Start()
@@ -22,6 +37,12 @@ public class CardManager : MonoBehaviour
 
     private void Initialize()
     {
+        for (int i = 0; i < cascades.Count; i++)
+        {
+            cascades[i].Initialize(i);
+            cells.Add(cascades[i]);
+        }
+
         // create all the cards
         for (int i=1; i<14; i++)
         {
@@ -29,7 +50,7 @@ public class CardManager : MonoBehaviour
             {
                 GameObject cardGO = Instantiate(cardPrefab);
                 Card card = cardGO.GetComponent<Card>();
-                card.Initialize(i, j, suitSprites[j]);
+                card.Initialize(i, j, suitSprites[j], canvas);
                 cards.Add(card);
             }
         }
@@ -45,29 +66,76 @@ public class CardManager : MonoBehaviour
         {
             int randomIndex = Random.Range(0, availableCards.Count);
             Card randomCard = availableCards[randomIndex];
-            AddCardToTableau(randomCard);
+            AddCardToCascade(randomCard);
             availableCards.RemoveAt(randomIndex);
         }
     }
 
-    private void AddCardToTableau(Card card)
+    private void AddCardToCascade(Card card)
     {
-        if (currentTableauIndex == tableauPiles.Count)
+        if (currentCascadeIndex == cascades.Count)
         {
             print("too many cards, not enough piles!");
         }
         else
         {
-            Transform pile = tableauPiles[currentTableauIndex];
-            card.transform.SetParent(pile);
-            card.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, cardOffset * numCardsInCurrentTableauPile, 0);
-            numCardsInCurrentTableauPile++;
-            if (currentTableauIndex < 4 && numCardsInCurrentTableauPile == 7 ||
-                currentTableauIndex >= 4 && numCardsInCurrentTableauPile == 6)
+            bool doesPileHaveSpace = cascades[currentCascadeIndex].AddInitialCard(card);
+            if (!doesPileHaveSpace)
             {
-                currentTableauIndex++;
-                numCardsInCurrentTableauPile = 0;
+                currentCascadeIndex++;
             }
+        }
+    }
+
+    public void StartCardDrag(Card card)
+    {
+        foreach (ICell cell in cells)
+        {
+            if (card == cell.GetFrontCard())
+            {
+                cell.RemoveFrontCard();
+                cellDraggedFrom = cell;
+                break;
+            }
+        }
+
+        foreach (ICell cell in cells)
+        {
+            if (cell.IsPotentialCardDrop(card))
+            {
+                potentialCellsForCardDrop.Add(cell);
+            }
+        }
+    }
+
+    public void CardDrag(Card card)
+    {
+        currentDropCell = null;
+        foreach (ICell cell in potentialCellsForCardDrop)
+        {
+            if (cell.IsInCardDropDistance(card))
+            {
+                cell.Highlight();
+                currentDropCell = cell;
+            }
+            else
+            {
+                cell.StopHighlight();
+            }
+        }
+    }
+
+    public void EndCardDrag(Card card)
+    {
+        if (currentDropCell != null)
+        {
+            currentDropCell.DropCardInCell(card);
+        }
+        else
+        {
+            cellDraggedFrom.DropCardInCell(card);
+            potentialCellsForCardDrop.Clear();
+            cellDraggedFrom = null;
         }
     }
 }
