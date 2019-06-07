@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Cascade : MonoBehaviour, ICell
 {
+    public GameObject highlight;
     private List<Card> cards = new List<Card>();
     private int cascadeIndex;
 
@@ -49,6 +50,10 @@ public class Cascade : MonoBehaviour, ICell
     public bool IsPotentialCardDrop(Card card)
     {
         Card frontCard = GetFrontCard();
+        if (frontCard == null)
+        {
+            return true;
+        }
         return AreDifferentColors(card, frontCard) &&
             card.GetNumber() == frontCard.GetNumber() - 1;
     }
@@ -60,19 +65,40 @@ public class Cascade : MonoBehaviour, ICell
 
     public bool IsInCardDropDistance(Card card)
     {
-        Vector3 frontCardPos = GetFrontCard().transform.position;
-        frontCardPos.y += Card.STACK_OFFSET;
-        return Vector3.Distance(card.transform.position, frontCardPos) < Card.DROP_DISTANCE;
+        Card frontCard = GetFrontCard();
+        if (frontCard == null)
+        {
+            return Vector3.Distance(card.transform.position, transform.position) < Card.DROP_DISTANCE;
+        }
+        else
+        {
+            Vector3 frontCardPos = frontCard.transform.position;
+            frontCardPos.y += Card.STACK_OFFSET;
+            return Vector3.Distance(card.transform.position, frontCardPos) < Card.DROP_DISTANCE;
+        }
     }
 
     public void Highlight()
     {
-        GetFrontCard().Highlight();
+        Card front = GetFrontCard();
+        if (front != null)
+        {
+            GetFrontCard().Highlight();
+        }
+        else
+        {
+            highlight.SetActive(true);
+        }
     }
 
     public void StopHighlight()
     {
-        GetFrontCard().StopHighlight();
+        Card front = GetFrontCard();
+        if (front != null)
+        {
+            GetFrontCard().StopHighlight();
+        }
+        highlight.SetActive(false);
     }
 
     public void DropCardInCell(Card card)
@@ -84,6 +110,10 @@ public class Cascade : MonoBehaviour, ICell
     public void RemoveFrontCard()
     {
         cards.RemoveAt(cards.Count - 1);
-        GetFrontCard().isFrontCard = true;
+        Card front = GetFrontCard();
+        if (front != null)
+        {
+            front.isFrontCard = true;
+        }
     }
 }

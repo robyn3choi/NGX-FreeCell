@@ -15,6 +15,11 @@ public class Foundation : MonoBehaviour, ICell
         card.transform.SetParent(transform);
         card.transform.localPosition = Vector3.zero;
         StopHighlight();
+
+        if (cards.Count == 13)
+        {
+            GameManager.inst.CheckIfAllFoundationsComplete();
+        }
     }
 
     public Card GetFrontCard()
@@ -65,6 +70,10 @@ public class Foundation : MonoBehaviour, ICell
         {
             front.isFrontCard = true;
         }
-        
+    }
+
+    public bool IsComplete()
+    {
+        return cards.Count == 13;
     }
 }
