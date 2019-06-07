@@ -6,7 +6,8 @@ using UnityEngine.EventSystems;
 
 public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public static float CARD_OFFSET = -26;
+    public static float STACK_OFFSET = -26;
+    public static float DROP_DISTANCE = 35;
 
     public GameObject highlight;
     public Image suitImage;

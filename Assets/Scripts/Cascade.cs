@@ -33,8 +33,8 @@ public class Cascade : MonoBehaviour, ICell
         cardsInPile.Add(card);
         card.isFrontCard = true;
         card.transform.SetParent(transform);
-        card.GetComponent<RectTransform>().anchoredPosition =
-            new Vector3(0, Card.CARD_OFFSET * (cardsInPile.Count - 1), 0);
+        card.transform.localPosition =
+            new Vector3(0, Card.STACK_OFFSET * (cardsInPile.Count - 1), 0);
     }
 
     public Card GetFrontCard()
@@ -61,8 +61,8 @@ public class Cascade : MonoBehaviour, ICell
     public bool IsInCardDropDistance(Card card)
     {
         Vector3 frontCardPos = GetFrontCard().transform.position;
-        frontCardPos.y += Card.CARD_OFFSET;
-        return Vector3.Distance(card.transform.position, frontCardPos) < -Card.CARD_OFFSET;
+        frontCardPos.y += Card.STACK_OFFSET;
+        return Vector3.Distance(card.transform.position, frontCardPos) < Card.DROP_DISTANCE;
     }
 
     public void Highlight()
