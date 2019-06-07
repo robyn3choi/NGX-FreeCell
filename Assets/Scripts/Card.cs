@@ -84,6 +84,11 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
         return suit == 0 || suit == 2;
     }
 
+    public int GetSuit()
+    {
+        return suit;
+    }
+
     public int GetNumber()
     {
         return number;

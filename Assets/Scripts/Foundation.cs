@@ -4,38 +4,67 @@ using UnityEngine;
 
 public class Foundation : MonoBehaviour, ICell
 {
+    public GameObject highlight;
+    public int suit;
+    private List<Card> cards = new List<Card>();
+
     public void DropCardInCell(Card card)
     {
-        throw new System.NotImplementedException();
+        cards.Add(card);
+        card.isFrontCard = true;
+        card.transform.SetParent(transform);
+        card.transform.localPosition = Vector3.zero;
+        StopHighlight();
     }
 
     public Card GetFrontCard()
     {
-        throw new System.NotImplementedException();
+        if (cards.Count > 0)
+        {
+            return cards[cards.Count - 1];
+        }
+        return null;
     }
 
     public void Highlight()
     {
-        throw new System.NotImplementedException();
-    }
-
-    public bool IsInCardDropDistance(Card card)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public bool IsPotentialCardDrop(Card card)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void RemoveFrontCard()
-    {
-        throw new System.NotImplementedException();
+        highlight.SetActive(true);
     }
 
     public void StopHighlight()
     {
-        throw new System.NotImplementedException();
+        highlight.SetActive(false);
+    }
+
+    public bool IsInCardDropDistance(Card card)
+    {
+        return Vector3.Distance(card.transform.position, transform.position) < Card.DROP_DISTANCE;
+    }
+
+    public bool IsPotentialCardDrop(Card card)
+    {
+        if (card.GetSuit() == suit)
+        {
+            if (GetFrontCard() == null && card.GetNumber() == 1)
+            {
+                return true;
+            }
+            else if (GetFrontCard() != null && card.GetNumber() == GetFrontCard().GetNumber()+1)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void RemoveFrontCard()
+    {
+        cards.RemoveAt(cards.Count - 1);
+        Card front = GetFrontCard();
+        if (front != null)
+        {
+            front.isFrontCard = true;
+        }
+        
     }
 }

@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Cascade : MonoBehaviour, ICell
 {
-    private List<Card> cardsInPile = new List<Card>();
-    private int tableauIndex;
+    private List<Card> cards = new List<Card>();
+    private int cascadeIndex;
 
     public void Initialize(int index)
     {
-        tableauIndex = index;
+        cascadeIndex = index;
     }
 
     public bool AddInitialCard(Card card)
     {
         AddCard(card);
         // if this pile is full
-        if (tableauIndex < 4 && cardsInPile.Count == 7 ||
-            tableauIndex >= 4 && cardsInPile.Count == 6)
+        if (cascadeIndex < 4 && cards.Count == 7 ||
+            cascadeIndex >= 4 && cards.Count == 6)
         {
             return false;
         }
@@ -26,22 +26,22 @@ public class Cascade : MonoBehaviour, ICell
 
     private void AddCard(Card card)
     {
-        if (cardsInPile.Count > 0)
+        if (cards.Count > 0)
         {
             GetFrontCard().isFrontCard = false;
         }
-        cardsInPile.Add(card);
+        cards.Add(card);
         card.isFrontCard = true;
         card.transform.SetParent(transform);
         card.transform.localPosition =
-            new Vector3(0, Card.STACK_OFFSET * (cardsInPile.Count - 1), 0);
+            new Vector3(0, Card.STACK_OFFSET * (cards.Count - 1), 0);
     }
 
     public Card GetFrontCard()
     {
-        if (cardsInPile.Count > 0)
+        if (cards.Count > 0)
         {
-            return cardsInPile[cardsInPile.Count - 1];
+            return cards[cards.Count - 1];
         }
         return null;
     }
@@ -83,7 +83,7 @@ public class Cascade : MonoBehaviour, ICell
 
     public void RemoveFrontCard()
     {
-        cardsInPile.RemoveAt(cardsInPile.Count - 1);
+        cards.RemoveAt(cards.Count - 1);
         GetFrontCard().isFrontCard = true;
     }
 }

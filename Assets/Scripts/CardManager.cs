@@ -39,7 +39,9 @@ public class CardManager : MonoBehaviour
     {
         FreeCell[] freecells = FindObjectsOfType<FreeCell>();
         cells.AddRange(freecells);
-        print(cells);
+
+        Foundation[] foundations = FindObjectsOfType<Foundation>();
+        cells.AddRange(foundations);
 
         for (int i = 0; i < cascades.Count; i++)
         {
@@ -107,7 +109,6 @@ public class CardManager : MonoBehaviour
         {
             if (cell.IsPotentialCardDrop(card))
             {
-                print(cell);
                 potentialCellsForCardDrop.Add(cell);
             }
         }

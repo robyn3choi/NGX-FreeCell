@@ -13,7 +13,6 @@ public class FreeCell : MonoBehaviour, ICell
         card.transform.SetParent(transform);
         card.transform.localPosition = Vector3.zero;
         StopHighlight();
-        print(cardInCell);
     }
 
     public Card GetFrontCard()
@@ -33,7 +32,7 @@ public class FreeCell : MonoBehaviour, ICell
 
     public bool IsInCardDropDistance(Card card)
     {
-        return Vector3.Distance(card.transform.position, transform.position) < -Card.STACK_OFFSET;
+        return Vector3.Distance(card.transform.position, transform.position) < Card.DROP_DISTANCE;
     }
 
     public bool IsPotentialCardDrop(Card card)
