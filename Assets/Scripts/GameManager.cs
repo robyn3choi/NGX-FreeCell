@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     private List<Foundation> foundations;
 
     public static GameManager inst = null;
-    void Awake()
+    private void Awake()
     {
         if (inst == null)
         {
@@ -18,16 +18,17 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        DontDestroyOnLoad(gameObject);
     }
 
-    private void Start()
+    public void Play()
     {
-        foundations = new List<Foundation>(FindObjectsOfType<Foundation>());
+        SceneManager.LoadScene("Play");
     }
 
-    public void Restart()
+    public void SetFoundations(Foundation[] foundations)
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        this.foundations = new List<Foundation>(foundations);
     }
 
     public void CheckIfAllFoundationsComplete()
@@ -43,7 +44,12 @@ public class GameManager : MonoBehaviour
         }
         if (areAllComplete)
         {
-            print("YOU WIN");
+            Win();
         }
+    }
+
+    public void Win()
+    {
+        SceneManager.LoadScene("End");
     }
 }

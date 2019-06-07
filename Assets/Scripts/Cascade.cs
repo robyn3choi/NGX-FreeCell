@@ -110,10 +110,10 @@ public class Cascade : MonoBehaviour, ICell
     public void RemoveFrontCard()
     {
         cards.RemoveAt(cards.Count - 1);
-        Card front = GetFrontCard();
-        if (front != null)
+        Card newFront = GetFrontCard();
+        if (newFront != null)
         {
-            front.isFrontCard = true;
+            newFront.isFrontCard = true;
         }
     }
 }

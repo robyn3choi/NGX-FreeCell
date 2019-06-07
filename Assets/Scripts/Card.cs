@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerDownHandler, IPointerUpHandler
 {
     public static float STACK_OFFSET = -26;
     public static float DROP_DISTANCE = 35;
@@ -16,6 +16,8 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     private int number;
     private int suit;
     private Transform canvas;
+    private bool hasDragged = false;
+    private bool hasStartedClick = false;
 
     public void Initialize(int number, int suit, Sprite suitSprite, Transform canvas)
     {
@@ -45,6 +47,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        hasDragged = true;
         if (isFrontCard)
         {
             transform.SetParent(canvas);
@@ -63,6 +66,7 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        hasDragged = false;
         if (isFrontCard)
         {
             CardManager.inst.EndCardDrag(this);
@@ -92,5 +96,18 @@ public class Card : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHand
     public int GetNumber()
     {
         return number;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        hasStartedClick = true;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (hasStartedClick && !hasDragged && isFrontCard)
+        {
+            CardManager.inst.TryAddCardToFreeCell(this);
+        }
     }
 }
