@@ -1,4 +1,4 @@
-Simple implementation of FreeCell for NGX Interactive's technical test.
+This is a simple implementation of FreeCell completed within 24 hrs.
 
 To play, open the "Welcome" scene.
 
